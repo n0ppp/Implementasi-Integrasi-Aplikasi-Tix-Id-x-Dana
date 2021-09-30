@@ -51,14 +51,28 @@ def check_dana_balance(nohp):
         mycursor.execute(sql, val)
 
         result = mycursor.fetchone()
+        # print(f"RESUL T: {result}\n")
         print("\n[CEK SALDO]\nSaldo", result[1],"saat ini = Rp.", result[2])
 
         return(result[2])
     except:
         print("\nGagal mendapatkan informasi akun", nohp)
 
+def check_history(nohp, date):
+    try:
+        sql = "SELECT * FROM history WHERE telepon = %s AND tanggal_history <= %s"
+        val = (nohp, date)
+        mycursor.execute(sql, val)
+
+        results = mycursor.fetchall()
+        print(f"HISTORY SAMPAI TANGGAL {date}:\n")
+        return results
+    except:
+        print("\nGagal mendapatkan history akun", nohp)
+
 def increase_dana_balance(nohp, nominal):
     try:
+        print("INCREASING BALANCE\n")
         sql = "UPDATE user SET saldo = saldo + %s WHERE telepon = %s"
         val = (nominal, nohp)
         mycursor.execute(sql, val)
@@ -76,13 +90,16 @@ def decrease_dana_balance(nohp, nominal):
     try:
         saldo = check_dana_balance(nohp)
         if saldo >= nominal:
+            print("MULAI DECREASE")
             sql = "UPDATE user SET saldo = saldo - %s WHERE telepon = %s"
             val = (nominal, nohp)
-            mycursor.execute(sql, val)  
+            mycursor.execute(sql, val)
+            print("SELESAI UPDATE DECREASE")
 
             sql = "INSERT INTO history (telepon, nominal, keterangan) VALUES (%s, %s,'Pembayaran')"
             val = (nohp, nominal)
-            mycursor.execute(sql, val)  
+            mycursor.execute(sql, val)
+            print("SELESAI HISTORY DECREASE")
 
             mydb.commit()
             print("\n[Pembayaran Berhasil]\nBerhasil melakukan Pembayaran sebesar", nominal, "pada user", nohp)
