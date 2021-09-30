@@ -186,8 +186,6 @@ if __name__ == '__main__':
             except:
                 print("Format Salah!\n")
         elif command == "3":
-            dana_program()
-        elif command == "4":
             try:
                 nohp = input("No HP -> ")
                 print("Masukkan Nominal Pembayaran\n")
@@ -196,6 +194,8 @@ if __name__ == '__main__':
                 decrease_dana_balance(nohp, add_saldo)
             except:
                 print("Format Salah!\n")
+        elif command == "4":
+            dana_program()
         elif command == "5":
             break
         else:

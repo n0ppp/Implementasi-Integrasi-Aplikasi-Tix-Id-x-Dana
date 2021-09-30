@@ -24,7 +24,7 @@ client_socket = socket.socket()
 host = socket.gethostname()
 port = 5000
 
-tixid_id = "123"
+# tixid_id = "123"
 
 user_id = None
 user_name = None
@@ -61,7 +61,8 @@ def tixid_login():
 
 def activate_dana():
     try:
-        message = "check_user;" + user_id + ";;"
+        # message = "check_user;" + user_id + ";;"
+        message = f"check_user;{user_id};;"
         client_socket.send(message.encode())
         response = client_socket.recv(1024).decode()
 
@@ -115,7 +116,8 @@ def tixid_program():
         command = input("[PILIH MENU]\n1. Cek Saldo\n2. Pesan Tiket Bioskop\n3. Batal Transaksi\n4. Cashback\n5. Exit\n\nMenu -> ")
         
         if command == "1":
-            message = "check_balance;" + user_id + ";;"
+            # message = "check_balance;" + user_id + ";;"
+            message = f"check_balance;{user_id};;"
             client_socket.send(message.encode())
             response = client_socket.recv(1024).decode()
 
@@ -139,7 +141,7 @@ def tixid_program():
             # print(result[pilihFilm-1][3]*nominal)
             bayar = result[pilihFilm-1][3]*nominal
             # message = "transaction;" + user_id + ";" + tixid_id + ";" + nominal +";"+pilihFilm
-            message = f"transaction;{user_id};{tixid_id};{bayar};"
+            message = f"transaction;{user_id};{bayar};"
             client_socket.send(message.encode())
             response = client_socket.recv(1024).decode()
 
@@ -153,7 +155,8 @@ def tixid_program():
         elif command == "3":
             nominal = input("Nominal return transaksi -> ")
 
-            message = "return;" + user_id + ";" + tixid_id + ";" + nominal
+            # message = "return;" + user_id + ";" + ";" + nominal
+            message = f"return;{user_id};;{nominal}"
             client_socket.send(message.encode())
             response = client_socket.recv(1024).decode()
 
@@ -165,7 +168,8 @@ def tixid_program():
         elif command == "4":
             nominal = input("Nominal cashback -> ")
 
-            message = "cashback;" + user_id + ";" + tixid_id + ";" + nominal
+            # message = "cashback;" + user_id + ";" + ";" + nominal
+            message = f"cashback;{user_id};;{nominal}"
             client_socket.send(message.encode())
             response = client_socket.recv(1024).decode()
 
@@ -175,6 +179,8 @@ def tixid_program():
                 print("\n[CASHBACK]\nBerhasil memproses cashback")
                 print("Saldo", user_name, "saat ini adalah", response, "\n")
         elif command == "5":
+            pass
+        elif command == "6":
             logout()
             break
         else:
