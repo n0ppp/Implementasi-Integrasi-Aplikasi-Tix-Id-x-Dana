@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.2
+-- version 5.1.0
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3306
--- Generation Time: Jan 15, 2021 at 02:51 AM
--- Server version: 8.0.21
--- PHP Version: 7.4.9
+-- Host: 127.0.0.1
+-- Generation Time: Sep 30, 2021 at 05:37 PM
+-- Server version: 10.4.19-MariaDB
+-- PHP Version: 8.0.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,8 +18,59 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `arsin_tixid`
+-- Database: `ais_tixid`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bioskop`
+--
+
+CREATE TABLE `bioskop` (
+  `id_bioskop` int(11) NOT NULL,
+  `nama` varchar(80) NOT NULL,
+  `harga` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `film`
+--
+
+CREATE TABLE `film` (
+  `id` int(11) NOT NULL,
+  `judul` varchar(80) NOT NULL,
+  `keterangan` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jadwal`
+--
+
+CREATE TABLE `jadwal` (
+  `id_jadwal` int(11) NOT NULL,
+  `id_film` int(11) NOT NULL,
+  `id_bioskop` int(11) NOT NULL,
+  `tanggal` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `transaksi`
+--
+
+CREATE TABLE `transaksi` (
+  `id_transaksi` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `id_bioskop` int(11) NOT NULL,
+  `id_film` int(11) NOT NULL,
+  `id_jadwal` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -27,18 +78,23 @@ SET time_zone = "+00:00";
 -- Table structure for table `user`
 --
 
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE IF NOT EXISTS `user` (
+CREATE TABLE `user` (
   `telepon` varchar(12) NOT NULL,
   `nama` varchar(144) NOT NULL,
-  `dana_status` int NOT NULL DEFAULT '0',
-  PRIMARY KEY (`telepon`)
+  `dana_status` int(11) NOT NULL DEFAULT 0
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `user`
+-- Indexes for dumped tables
 --
 
+--
+-- Indexes for table `bioskop`
+--
+ALTER TABLE `bioskop`
+  ADD PRIMARY KEY (`id_bioskop`);
+
+<<<<<<< HEAD
 INSERT INTO `user` (`telepon`, `nama`, `dana_status`) VALUES
 ('08123456789', 'dummy', 1);
 
@@ -129,6 +185,59 @@ insert into tiket (id_film, id_bioskop, tanggal) values
  (5, 4, '2021-09-02'),
  (2, 7, '2021-09-03');
 
+=======
+--
+-- Indexes for table `film`
+--
+ALTER TABLE `film`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `jadwal`
+--
+ALTER TABLE `jadwal`
+  ADD PRIMARY KEY (`id_jadwal`);
+
+--
+-- Indexes for table `transaksi`
+--
+ALTER TABLE `transaksi`
+  ADD PRIMARY KEY (`id_transaksi`);
+
+--
+-- Indexes for table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`telepon`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `bioskop`
+--
+ALTER TABLE `bioskop`
+  MODIFY `id_bioskop` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `film`
+--
+ALTER TABLE `film`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `jadwal`
+--
+ALTER TABLE `jadwal`
+  MODIFY `id_jadwal` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `transaksi`
+--
+ALTER TABLE `transaksi`
+  MODIFY `id_transaksi` int(11) NOT NULL AUTO_INCREMENT;
+>>>>>>> e6f8f6ce8b61775c1a5f76082bc4425483603160
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
