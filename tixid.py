@@ -1,7 +1,8 @@
 '''
 1. Tambah tabel bioskop (id, nama, harga)
-2. Tambah tabel film (id, nama)
-3. Tambah tabel jadwal (film, bioskop, )
+2. Tambah tabel film (id, judul)
+3. Tambah tabel jadwal (id, id_film, id_bioskop, tanggal)
+4. Tambah tabel transaksi (id, id_user, id_bioskop, id_film, id_jadwal)
 '''
 
 
