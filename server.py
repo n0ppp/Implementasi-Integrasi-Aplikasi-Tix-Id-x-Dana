@@ -71,5 +71,11 @@ def dana_program():
     conn.close()
 
 if __name__ == '__main__':
-	dana_program()
-	
+	while True:
+		command = input("\n[PILIH MENU]\n1. Nyalakan Server\n2. Matikan Server\n\nMenu -> ")
+		if command == "1" :
+			dana_program()
+		elif command == "2":
+			break
+		else:
+			print("command tidak ditemukan")
