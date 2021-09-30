@@ -33,16 +33,16 @@ def check_user(nohp):
     except:
         print("Gagal mendapatkan informasi akun", nohp)
 
-def new_dana_user(nohp, nama, saldo):
+def new_dana_user(nohp, nama):
     try:
-        sql = "INSERT INTO user (telepon, nama, saldo) VALUES (%s, %s, %s)"
-        val = (nohp, nama, saldo)
+        sql = "INSERT INTO user (telepon, nama, saldo) VALUES (%s, %s, 0)"
+        val = (nohp, nama)
         mycursor.execute(sql, val)
 
         mydb.commit()
-        print("\n[PENDAFTARAN BERHASIL]\nBerhasil mendaftarkan user", nama, "\nSaldo saat ini = Rp.", saldo, "\n")
+        print("\n[PENDAFTARAN BERHASIL]\nBerhasil mendaftarkan user", nama)
     except:
-        print("Gagal mendaftarkan user baru\n")
+        print("\nGagal mendaftarkan user baru\n")
 
 def check_dana_balance(nohp):
     try:
@@ -55,7 +55,7 @@ def check_dana_balance(nohp):
 
         return(result[2])
     except:
-        print("Gagal mendapatkan informasi akun", nohp)
+        print("\nGagal mendapatkan informasi akun", nohp)
 
 def increase_dana_balance(nohp, nominal):
     try:
@@ -63,33 +63,45 @@ def increase_dana_balance(nohp, nominal):
         val = (nominal, nohp)
         mycursor.execute(sql, val)
 
+        sql = "INSERT INTO history (telepon, nominal, keterangan) VALUES (%s, %s,'Top Up Saldo')"
+        val = (nohp, nominal)
+        mycursor.execute(sql, val)
+
         mydb.commit()
         print("\n[TAMBAH SALDO]\nBerhasil menambah saldo sebesar", nominal, "pada user", nohp)
     except:
-        print("Gagal menambah saldo pada user", nohp)
+        print("\nGagal menambah saldo pada user", nohp)
 
 def decrease_dana_balance(nohp, nominal):
     try:
         saldo = check_dana_balance(nohp)
-        if saldo > nominal:
+        if saldo >= nominal:
             sql = "UPDATE user SET saldo = saldo - %s WHERE telepon = %s"
             val = (nominal, nohp)
-            mycursor.execute(sql, val)    
+            mycursor.execute(sql, val)  
+
+            sql = "INSERT INTO history (telepon, nominal, keterangan) VALUES (%s, %s,'Pembayaran')"
+            val = (nohp, nominal)
+            mycursor.execute(sql, val)  
 
             mydb.commit()
-            print("\n[KURANGI SALDO]\nBerhasil mengurangi saldo sebesar", nominal, "pada user", nohp)
+            print("\n[Pembayaran Berhasil]\nBerhasil melakukan Pembayaran sebesar", nominal, "pada user", nohp)
+
+            saldo = check_dana_balance(nohp)
         else:
-            print("\n[GAGAL KURANGI SALDO]\nSaldo", nohp, "Kurang!")
+            print("\n[Pembayaran Gagal]\nSaldo anda tidak mencukupi")
     except:
-        print("Gagal mengurangi saldo pada user", nohp)
+        print("\nGagal melakukan pembayaran pada user", nohp)
 
 def dana_program():
+    print("Server Starting")
     host = socket.gethostname()
     port = 5000 
 
     server_socket = socket.socket()
     server_socket.bind((host, port))
 
+    print("Waiting for connection")
     server_socket.listen(2)
     conn, address = server_socket.accept()
     print("Connection from: " + str(address))
@@ -153,18 +165,38 @@ def dana_program():
 
 if __name__ == '__main__':
     while True:
-        reg_status = input("Apakah Anda ingin menambahkan user baru? [y/n] ")
-        if reg_status == "n":
-            break
-        else:
+        command = input("[PILIH MENU]\n1. Daftar akun dana\n2. Top Up Saldo\n3. Pembayaran\n4. Nyalakan Server untuk TixID\n5. Exit\n\nMenu -> ")
+        if command == "1":
             try:
                 print("[DAFTAR USER BARU]\n")
                 new_name = input("Nama -> ")
                 new_nohp = input("No HP -> ")
-                new_saldo = int(input("Saldo -> "))
+                # new_saldo = int(input("Saldo -> "))
 
-                new_dana_user(new_nohp, new_name, new_saldo)
+                new_dana_user(new_nohp, new_name)
             except:
                 print("Format Salah!\n")
+        elif command == "2":
+            try:
+                nohp = input("No HP -> ")
+                print("Masukkan Nominal Saldo\n")
+                add_saldo = int(input("Saldo -> "))
 
-    dana_program()
+                increase_dana_balance(nohp, add_saldo)
+            except:
+                print("Format Salah!\n")
+        elif command == "3":
+            dana_program()
+        elif command == "4":
+            try:
+                nohp = input("No HP -> ")
+                print("Masukkan Nominal Pembayaran\n")
+                add_saldo = int(input("Saldo -> "))
+
+                decrease_dana_balance(nohp, add_saldo)
+            except:
+                print("Format Salah!\n")
+        elif command == "5":
+            break
+        else:
+            print("Opsi tidak tersedia\n")
