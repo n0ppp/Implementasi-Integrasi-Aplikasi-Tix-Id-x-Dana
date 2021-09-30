@@ -1,13 +1,15 @@
 '''
 1. Tambah tabel bioskop (id, nama, harga)
-2. Tambah tabel film (id, judul)
-3. Tambah tabel jadwal (id, id_film, id_bioskop, tanggal)
-4. Tambah tabel transaksi (id, id_user, id_bioskop, id_film, id_jadwal)
+2. Tambah tabel film (id, nama)
+3. Tambah tabel jadwal (film, bioskop, jadwal(dd/mm/yy) )
+4. Tambah menu top up
+5. Tambah menu history
 '''
 
 
 import socket
 import mysql.connector
+import ast
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -23,7 +25,7 @@ client_socket = socket.socket()
 host = socket.gethostname()
 port = 5000
 
-tixid_id = "123"
+# tixid_id = "123"
 
 user_id = None
 user_name = None
@@ -60,7 +62,8 @@ def tixid_login():
 
 def activate_dana():
     try:
-        message = "check_user;" + user_id + ";;"
+        # message = "check_user;" + user_id + ";;"
+        message = f"check_user;{user_id};;"
         client_socket.send(message.encode())
         response = client_socket.recv(1024).decode()
 
@@ -80,6 +83,24 @@ def activate_dana():
     except:
         print("Gagal mengaktifkan dana pada akun\n", user_name)
 
+def list_bioskop():
+    try:
+        print("[LIST BIOSKOP TIX ID]")
+        
+        sql = "SELECT * FROM bioskop"
+        mycursor.execute(sql)
+
+        result = mycursor.fetchone()
+        print(result)
+        # user_id = result[0]
+        # user_name = result[1]
+        # user_status = result[2]
+    except:
+        print("\n[LIST BIOSKOP GAGAL]\n")
+
+def list_tiket():
+    pass
+
 def logout():
     global user_id, user_name, user_status
 
@@ -93,10 +114,11 @@ def logout():
 def tixid_program():
 
     while True:
-        command = input("[PILIH MENU]\n1. Cek Saldo\n2. Pesan Tiket Bioskop\n3. Batal Transaksi\n4. Cashback\n5. Exit\n\nMenu -> ")
+        command = input("[PILIH MENU]\n1. Cek Saldo\n2. Pesan Tiket Bioskop\n3. Top Up\n4. Cashback\n5. History\n\nMenu -> ")
         
         if command == "1":
-            message = "check_balance;" + user_id + ";;"
+            # message = "check_balance;" + user_id + ";;"
+            message = f"check_balance;{user_id}"
             client_socket.send(message.encode())
             response = client_socket.recv(1024).decode()
 
@@ -106,17 +128,21 @@ def tixid_program():
                 print("\n[CEK SALDO]\nBerhasil cek saldo")
                 print("Saldo", user_name, "saat ini adalah", response, "\n")
         elif command == "2":
-            sql = "SELECT namaFilm FROM film"
+            sql = "SELECT film.judul, tiket.tanggal, bioskop.nama_bioskop, bioskop.harga FROM tiket LEFT JOIN bioskop ON tiket.id_bioskop=bioskop.id_bioskop LEFT JOIN film on tiket.id_film=film.id_film"
             mycursor.execute(sql)
-            print("Data Film: ")
+            print("Data Film: \nNo.\tJudul\tTanggal\tBioskop\tHarga")
             result = mycursor.fetchall()
-            for num,i in enumerate(result):
-                print(str(num+1)+". "+i[0])
+            # print(result)
+            for num, i in enumerate(result):
+                print(f"{num+1}. {i[3]}\t{i[1]}\t{i[2]}\t{i[0]}")
+                # print(str(num+1)+". "+i[0]+""+str(i[1])+""+i[2]+""+i[3])
             
-            pilihFilm = input("Pilih Film dengan memasukkan Nomor Film -> ")
-            nominal = input("Jumlah Tiket (1 Tiket Rp 25.000) -> ")
-            pilihFilm = result[int(pilihFilm)-1][0]
-            message = "transaction;" + user_id + ";" + tixid_id + ";" + nominal +";"+pilihFilm
+            pilihFilm = int(input("Pilih Film dengan memasukkan Nomor Film -> "))
+            nominal = int(input("Jumlah Tiket -> "))
+            # print(result[pilihFilm-1][3]*nominal)
+            bayar = result[pilihFilm-1][3]*nominal
+            # message = "transaction;" + user_id + ";" + tixid_id + ";" + nominal +";"+pilihFilm
+            message = f"transaction;{user_id};{bayar}"
             client_socket.send(message.encode())
             response = client_socket.recv(1024).decode()
 
@@ -127,22 +153,28 @@ def tixid_program():
             else:
                 print("\n[TRANSAKSI SUKSES]\nBerhasil Berhasil memproses transaksi")
                 print("Saldo", user_name, "saat ini adalah", response, "\n")
-        elif command == "3":
-            nominal = input("Nominal return transaksi -> ")
+        elif command == "5":
+            tanggal = input("Masukkan tanggal (sampai)-> ")
 
-            message = "return;" + user_id + ";" + tixid_id + ";" + nominal
+            # message = "return;" + user_id + ";" + ";" + nominal
+            message = f"history;{user_id};{tanggal}"
             client_socket.send(message.encode())
             response = client_socket.recv(1024).decode()
-
+            print(type(response))
+            response = eval(response)
+            
             if response == "failed":
                 print("dana sedang error!")
             else:
-                print("\n[RETURN TRANSAKSI]\nBerhasil mereturn transaksi")
-                print("Saldo", user_name, "saat ini adalah", response, "\n")
+                print("\n[HISTORY TRANSAKSI]\nBerhasil mereturn history transaksi")
+                # for num, i in enumerate(response):
+                #     print(f"{num}. {i}")
+                print(response)
         elif command == "4":
             nominal = input("Nominal cashback -> ")
 
-            message = "cashback;" + user_id + ";" + tixid_id + ";" + nominal
+            # message = "cashback;" + user_id + ";" + ";" + nominal
+            message = f"cashback;{user_id};;{nominal}"
             client_socket.send(message.encode())
             response = client_socket.recv(1024).decode()
 
@@ -151,7 +183,20 @@ def tixid_program():
             else:
                 print("\n[CASHBACK]\nBerhasil memproses cashback")
                 print("Saldo", user_name, "saat ini adalah", response, "\n")
-        elif command == "5":
+        elif command == "3":
+            nominal = input("Nominal Top-Up -> ")
+
+            # message = "return;" + user_id + ";" + ";" + nominal
+            message = f"topup;{user_id};{nominal}"
+            client_socket.send(message.encode())
+            response = client_socket.recv(1024).decode()
+
+            if response == "failed":
+                print("dana sedang error!")
+            else:
+                print("\n[TOP UP SUKSES]\nBerhasil Top-Up!")
+                print("Saldo", user_name, "saat ini adalah", response, "\n")
+        elif command == "6":
             logout()
             break
         else:

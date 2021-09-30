@@ -18,6 +18,7 @@ def dana_program():
         data_receive = conn.recv(1024).decode()
 
         data = data_receive.split(";")
+        print(data)
 
         if not data_receive:
             print("Client tixid", str(address), "telah logout")
@@ -53,16 +54,48 @@ def dana_program():
                     conn.send(response.encode())
             elif data[0] == "transaction":
                 try:
+                    # print("MASUK TRANSAKSI")
                     saldo = dana_app.check_dana_balance(data[1])
+                    # print(saldo, data[2])
 
-                    if saldo > int(data[3]):
-                        dana_app.decrease_dana_balance(data[1], int(data[3]))
-                        dana_app.increase_dana_balance(data[2], int(data[3]))
+                    if saldo >= int(data[2]):
+                        dana_app.decrease_dana_balance(data[1], int(data[2]))
+                        # dana_app.increase_dana_balance(data[1], int(data[2]))
                         response = str(dana_app.check_dana_balance(data[1]))
                     else:
                         response = "mines"
                     conn.send(response.encode())
                 except:
+                    print("TRANSACTION FAILED\n")
+                    response = "failed"
+                    conn.send(response.encode())
+            elif data[0] == "topup":
+                try:
+                    # print("MASUK TRANSAKSI")
+                    nominal = int(data[2])
+                    # print(data[2])
+
+                    if nominal > 0:
+                        # dana_app.decrease_dana_balance(data[1], int(data[2]))
+                        print("TEST GAGAL APA ENGGAK 1\n")
+                        dana_app.increase_dana_balance(data[1], int(data[2]))
+                        response = str(dana_app.check_dana_balance(data[1]))
+                        # print(response)
+                    else:
+                        response = "mines"
+                    conn.send(response.encode())
+                except:
+                    print("TOP UP FAILED\n")
+                    response = "failed"
+                    conn.send(response.encode())
+            elif data[0] == 'history':
+                try:
+                    hasil = dana_app.check_history(data[1], data[2])
+                    print(f"HASIL: {hasil}\n")
+                    response = f"{hasil}"
+                    conn.send(response.encode())
+                except:
+                    print("HISTORY FAILED\n")
                     response = "failed"
                     conn.send(response.encode())
             else:
