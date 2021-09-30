@@ -1,3 +1,9 @@
+'''
+1. Saldo waktu awal daftar dihilangin
+2. Tambah tabel history transaksi (+ waktu topup, - waktu transaksi)
+'''
+
+
 import socket
 import mysql.connector
 
@@ -5,14 +11,14 @@ mydb = mysql.connector.connect(
   host="localhost",
   user="root",
   password="",
-  database="arsin_dana"
+  database="ais_dana"
 )
 
 mycursor = mydb.cursor()
 
 def check_user(nohp):
     try:
-        sql = "SELECT * FROM user WHERE phone = %s"
+        sql = "SELECT * FROM user WHERE telepon = %s"
         val = (nohp, )
         mycursor.execute(sql, val)
 
@@ -29,7 +35,7 @@ def check_user(nohp):
 
 def new_dana_user(nohp, nama, saldo):
     try:
-        sql = "INSERT INTO user (phone, nama, saldo) VALUES (%s, %s, %s)"
+        sql = "INSERT INTO user (telepon, nama, saldo) VALUES (%s, %s, %s)"
         val = (nohp, nama, saldo)
         mycursor.execute(sql, val)
 
@@ -40,7 +46,7 @@ def new_dana_user(nohp, nama, saldo):
 
 def check_dana_balance(nohp):
     try:
-        sql = "SELECT * FROM user WHERE phone = %s"
+        sql = "SELECT * FROM user WHERE telepon = %s"
         val = (nohp, )
         mycursor.execute(sql, val)
 
@@ -53,7 +59,7 @@ def check_dana_balance(nohp):
 
 def increase_dana_balance(nohp, nominal):
     try:
-        sql = "UPDATE user SET saldo = saldo + %s WHERE phone = %s"
+        sql = "UPDATE user SET saldo = saldo + %s WHERE telepon = %s"
         val = (nominal, nohp)
         mycursor.execute(sql, val)
 
@@ -66,7 +72,7 @@ def decrease_dana_balance(nohp, nominal):
     try:
         saldo = check_dana_balance(nohp)
         if saldo > nominal:
-            sql = "UPDATE user SET saldo = saldo - %s WHERE phone = %s"
+            sql = "UPDATE user SET saldo = saldo - %s WHERE telepon = %s"
             val = (nominal, nohp)
             mycursor.execute(sql, val)    
 

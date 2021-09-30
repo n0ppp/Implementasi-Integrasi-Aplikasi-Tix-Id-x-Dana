@@ -1,3 +1,10 @@
+'''
+1. Tambah tabel bioskop (id, nama, harga)
+2. Tambah tabel film (id, nama)
+3. Tambah tabel jadwal (film, bioskop, )
+'''
+
+
 import socket
 import mysql.connector
 
@@ -5,7 +12,7 @@ mydb = mysql.connector.connect(
   host="localhost",
   user="root",
   password="",
-  database="arsin_tixid"
+  database="ais_tixid"
 )
 
 mycursor = mydb.cursor()
@@ -23,7 +30,7 @@ user_status = 2
 
 def daftar_tix_id(nohp, nama):
     try:
-        sql = "INSERT INTO user (phone, nama) VALUES (%s, %s)"
+        sql = "INSERT INTO user (telepon, nama) VALUES (%s, %s)"
         val = (nohp, nama)
         mycursor.execute(sql, val)
 
@@ -38,7 +45,7 @@ def tixid_login():
         print("[LOGIN USER TIX ID]")
         log_id = input("No HP -> ")
         
-        sql = "SELECT * FROM user WHERE phone = %s"
+        sql = "SELECT * FROM user WHERE telepon = %s"
         val = (log_id, )
         mycursor.execute(sql, val)
 
@@ -59,7 +66,7 @@ def activate_dana():
         if response == "empty":
             print("Gagal aktivasi dana\nTidak akun dengan nomor tersebut!")
         elif response == "exist":
-            sql = "UPDATE user SET dana_status = 1 WHERE phone = %s"
+            sql = "UPDATE user SET dana_status = 1 WHERE telepon = %s"
             val = (user_id, )
             mycursor.execute(sql, val)
 
@@ -145,7 +152,7 @@ def tixid_program():
                 print("Saldo", user_name, "saat ini adalah", response, "\n")
         elif command == "5":
             logout()
-            break;
+            break
         else:
             print("Maaf, perintah tidak dikenali\n")
 
