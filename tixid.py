@@ -6,11 +6,15 @@
 5. Tambah menu history
 '''
 
+# Library yang digunakan untuk melakukan komunikasi antar program dengan menggunakan socket
 
 import socket
-import mysql.connector
-import ast
 
+# Library yang digunakan agar program python dapat menggunakan database mysql
+
+import mysql.connector
+
+# Melakukan koneksi ke database ais_tixid
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
@@ -18,19 +22,22 @@ mydb = mysql.connector.connect(
   database="ais_tixid"
 )
 
+# mysql cursor untuk melakukan eksekusi statement yang berkomunikasi dengan mysql database
 mycursor = mydb.cursor()
 
+# inisialisasi socket untuk client
 client_socket = socket.socket()
 
+# konfigurasi host dan port yang akan digunakan
 host = socket.gethostname()
 port = 5000
 
-# tixid_id = "123"
-
+# deklarasi variable global
 user_id = None
 user_name = None
 user_status = 2
 
+# fungsi untuk mendaftarkan akun baru pada tixid
 def daftar_tix_id(nohp, nama):
     try:
         sql = "INSERT INTO user (telepon, nama) VALUES (%s, %s)"
@@ -42,6 +49,7 @@ def daftar_tix_id(nohp, nama):
     except:
         print("Gagal mendaftarkan user baru\n")
 
+# fungsi untuk login ke akun tixid
 def tixid_login():
     try:
         global user_id, user_name, user_status
@@ -60,9 +68,9 @@ def tixid_login():
     except:
         print("\n[LOGIN GAGAL]\n")
 
+# fungsi untuk mengaktifkan akun dana pada akun tixid
 def activate_dana():
     try:
-        # message = "check_user;" + user_id + ";;"
         message = f"check_user;{user_id};;"
         client_socket.send(message.encode())
         response = client_socket.recv(1024).decode()
@@ -83,6 +91,7 @@ def activate_dana():
     except:
         print("Gagal mengaktifkan dana pada akun\n", user_name)
 
+# fungsi untuk menampilkan list bioskop
 def list_bioskop():
     try:
         print("[LIST BIOSKOP TIX ID]")
@@ -92,15 +101,13 @@ def list_bioskop():
 
         result = mycursor.fetchone()
         print(result)
-        # user_id = result[0]
-        # user_name = result[1]
-        # user_status = result[2]
     except:
         print("\n[LIST BIOSKOP GAGAL]\n")
 
 def list_tiket():
     pass
 
+# fungsi logout akun tixid
 def logout():
     global user_id, user_name, user_status
 
@@ -110,7 +117,7 @@ def logout():
 
     client_socket.close()
 
-
+# menu program tixid
 def tixid_program():
 
     while True:
@@ -132,16 +139,13 @@ def tixid_program():
             mycursor.execute(sql)
             print("Data Film: \nNo.\tJudul\tTanggal\tBioskop\tHarga")
             result = mycursor.fetchall()
-            # print(result)
+
             for num, i in enumerate(result):
                 print(f"{num+1}. {i[3]}\t{i[1]}\t{i[2]}\t{i[0]}")
-                # print(str(num+1)+". "+i[0]+""+str(i[1])+""+i[2]+""+i[3])
-            
+
             pilihFilm = int(input("Pilih Film dengan memasukkan Nomor Film -> "))
             nominal = int(input("Jumlah Tiket -> "))
-            # print(result[pilihFilm-1][3]*nominal)
             bayar = result[pilihFilm-1][3]*nominal
-            # message = "transaction;" + user_id + ";" + tixid_id + ";" + nominal +";"+pilihFilm
             message = f"transaction;{user_id};{bayar}"
             client_socket.send(message.encode())
             response = client_socket.recv(1024).decode()
@@ -153,10 +157,33 @@ def tixid_program():
             else:
                 print("\n[TRANSAKSI SUKSES]\nBerhasil Berhasil memproses transaksi")
                 print("Saldo", user_name, "saat ini adalah", response, "\n")
+        elif command == "3":
+            nominal = input("Nominal Top-Up -> ")
+
+            message = f"topup;{user_id};{nominal}"
+            client_socket.send(message.encode())
+            response = client_socket.recv(1024).decode()
+
+            if response == "failed":
+                print("dana sedang error!")
+            else:
+                print("\n[TOP UP SUKSES]\nBerhasil Top-Up!")
+                print("Saldo", user_name, "saat ini adalah", response, "\n")
+        elif command == "4":
+            nominal = input("Nominal cashback -> ")
+
+            message = f"cashback;{user_id};;{nominal}"
+            client_socket.send(message.encode())
+            response = client_socket.recv(1024).decode()
+
+            if response == "failed":
+                print("dana sedang error!")
+            else:
+                print("\n[CASHBACK]\nBerhasil memproses cashback")
+                print("Saldo", user_name, "saat ini adalah", response, "\n")
         elif command == "5":
             tanggal = input("Masukkan tanggal (sampai)-> ")
 
-            # message = "return;" + user_id + ";" + ";" + nominal
             message = f"history;{user_id};{tanggal}"
             client_socket.send(message.encode())
             response = client_socket.recv(1024).decode()
@@ -167,42 +194,14 @@ def tixid_program():
                 print("dana sedang error!")
             else:
                 print("\n[HISTORY TRANSAKSI]\nBerhasil mereturn history transaksi")
-                # for num, i in enumerate(response):
-                #     print(f"{num}. {i}")
                 print(response)
-        elif command == "4":
-            nominal = input("Nominal cashback -> ")
-
-            # message = "cashback;" + user_id + ";" + ";" + nominal
-            message = f"cashback;{user_id};;{nominal}"
-            client_socket.send(message.encode())
-            response = client_socket.recv(1024).decode()
-
-            if response == "failed":
-                print("dana sedang error!")
-            else:
-                print("\n[CASHBACK]\nBerhasil memproses cashback")
-                print("Saldo", user_name, "saat ini adalah", response, "\n")
-        elif command == "3":
-            nominal = input("Nominal Top-Up -> ")
-
-            # message = "return;" + user_id + ";" + ";" + nominal
-            message = f"topup;{user_id};{nominal}"
-            client_socket.send(message.encode())
-            response = client_socket.recv(1024).decode()
-
-            if response == "failed":
-                print("dana sedang error!")
-            else:
-                print("\n[TOP UP SUKSES]\nBerhasil Top-Up!")
-                print("Saldo", user_name, "saat ini adalah", response, "\n")
         elif command == "6":
             logout()
             break
         else:
             print("Maaf, perintah tidak dikenali\n")
 
-
+# fungsi main yang dieksekusi pertama kali saat program tixid berjalan
 if __name__ == '__main__':
     while True:
         reg_status = input("Apakah Anda ingin menambahkan user baru? [y/n] ")

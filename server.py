@@ -1,7 +1,13 @@
+# Library yang digunakan untuk melakukan komunikasi antar program dengan menggunakan socket
+
 import socket
+
+# Melakukan import program dana.py untuk diintegrasikan dengan program tixid.py
+
 import dana as dana_app
 
-def dana_program():
+# Fungsi utama untuk server
+def server_program():
     print("Server Starting")
     host = socket.gethostname()
     port = 5000 
@@ -54,13 +60,10 @@ def dana_program():
                     conn.send(response.encode())
             elif data[0] == "transaction":
                 try:
-                    # print("MASUK TRANSAKSI")
                     saldo = dana_app.check_dana_balance(data[1])
-                    # print(saldo, data[2])
 
                     if saldo >= int(data[2]):
                         dana_app.decrease_dana_balance(data[1], int(data[2]))
-                        # dana_app.increase_dana_balance(data[1], int(data[2]))
                         response = str(dana_app.check_dana_balance(data[1]))
                     else:
                         response = "mines"
@@ -71,16 +74,11 @@ def dana_program():
                     conn.send(response.encode())
             elif data[0] == "topup":
                 try:
-                    # print("MASUK TRANSAKSI")
                     nominal = int(data[2])
-                    # print(data[2])
 
                     if nominal > 0:
-                        # dana_app.decrease_dana_balance(data[1], int(data[2]))
-                        print("TEST GAGAL APA ENGGAK 1\n")
                         dana_app.increase_dana_balance(data[1], int(data[2]))
                         response = str(dana_app.check_dana_balance(data[1]))
-                        # print(response)
                     else:
                         response = "mines"
                     conn.send(response.encode())
@@ -103,6 +101,13 @@ def dana_program():
 
     conn.close()
 
+# fungsi main yang digunakan untuk menampilkan menu yang digunakan untuk mengeksekusi program server
 if __name__ == '__main__':
-	dana_program()
-	
+	while True:
+		command = input("\n[PILIH MENU]\n1. Nyalakan Server\n2. Matikan Server\n\nMenu -> ")
+		if command == "1" :
+			server_program()
+		elif command == "2":
+			break
+		else:
+			print("command tidak ditemukan")
