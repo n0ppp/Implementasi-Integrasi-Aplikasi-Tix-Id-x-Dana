@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.0
+-- version 5.0.3
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 30, 2021 at 07:06 PM
--- Server version: 10.4.19-MariaDB
--- PHP Version: 8.0.6
+-- Generation Time: Oct 01, 2021 at 06:07 PM
+-- Server version: 10.4.14-MariaDB
+-- PHP Version: 7.4.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -31,8 +31,20 @@ CREATE TABLE `history` (
   `id_history` int(11) NOT NULL,
   `telepon` varchar(12) NOT NULL,
   `nominal` int(11) NOT NULL,
-  `keterangan` varchar(50) NOT NULL
+  `keterangan` varchar(50) NOT NULL,
+  `tanggal_history` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `history`
+--
+
+INSERT INTO `history` (`id_history`, `telepon`, `nominal`, `keterangan`, `tanggal_history`) VALUES
+(1, '123', 137500, 'Pembayaran', '2021-10-01 00:00:00'),
+(2, '123', 100000, 'Top Up Saldo', '2021-10-01 00:00:00'),
+(3, '123', 188000, 'Pembayaran', '2021-10-01 00:00:00'),
+(4, '123', 114000, 'Pembayaran', '2021-10-01 00:00:00'),
+(5, '123', 55000, 'Pembayaran', '2021-10-01 18:46:26');
 
 -- --------------------------------------------------------
 
@@ -45,6 +57,15 @@ CREATE TABLE `user` (
   `nama` varchar(14) NOT NULL,
   `saldo` int(11) NOT NULL DEFAULT 0
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`telepon`, `nama`, `saldo`) VALUES
+('08123456789', 'dummy', 5000000),
+('123', 'Dava', 14220),
+('321', 'Dida', 50000);
 
 --
 -- Indexes for dumped tables
@@ -70,7 +91,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `history`
 --
 ALTER TABLE `history`
-  MODIFY `id_history` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_history` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

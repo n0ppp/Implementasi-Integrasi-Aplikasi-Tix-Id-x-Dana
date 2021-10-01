@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.0
+-- version 5.0.3
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 30, 2021 at 05:37 PM
--- Server version: 10.4.19-MariaDB
--- PHP Version: 8.0.6
+-- Generation Time: Oct 01, 2021 at 06:07 PM
+-- Server version: 10.4.14-MariaDB
+-- PHP Version: 7.4.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,10 +28,41 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `bioskop` (
-  `id_bioskop` int(11) NOT NULL,
-  `nama` varchar(80) NOT NULL,
+  `id_bioskop` int(3) NOT NULL,
+  `nama_bioskop` varchar(64) NOT NULL,
   `harga` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `bioskop`
+--
+
+INSERT INTO `bioskop` (`id_bioskop`, `nama_bioskop`, `harga`) VALUES
+(1, 'San Jacinto', 28000),
+(2, 'Szombathely', 50500),
+(3, 'Jaguimitan', 30000),
+(4, 'Sinanju', 47500),
+(5, 'Båstad', 27500),
+(6, 'Chengjiao Chengguanzhen', 57000),
+(7, 'Göteborg', 47000),
+(8, 'Shengli', 31000),
+(9, 'Delong', 26500),
+(10, 'Soito', 48500),
+(11, 'Volodars’k-Volyns’kyy', 53000),
+(12, 'Sergiyev Posad', 55000),
+(13, 'Rechka', 59500),
+(14, 'Cabricán', 35500),
+(15, 'Dagsar', 45000),
+(16, 'Annecy', 53500),
+(17, 'Gwio Kura', 37500),
+(18, 'Morrelgonj', 33500),
+(19, 'Stony Hill', 50500),
+(20, 'Chenxiang', 48000),
+(21, 'Volgorechensk', 34000),
+(22, 'Portëz', 44000),
+(23, 'Wuyang', 40000),
+(24, 'Gotemba', 26000),
+(25, 'Oum Hadjer', 25000);
 
 -- --------------------------------------------------------
 
@@ -40,37 +71,73 @@ CREATE TABLE `bioskop` (
 --
 
 CREATE TABLE `film` (
-  `id` int(11) NOT NULL,
-  `judul` varchar(80) NOT NULL,
-  `keterangan` varchar(255) NOT NULL
+  `id_film` int(3) NOT NULL,
+  `judul` varchar(64) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `film`
+--
+
+INSERT INTO `film` (`id_film`, `judul`) VALUES
+(1, 'Last Time I Saw Paris, The'),
+(2, 'Storm Warning'),
+(3, 'Superman/Batman: Apocalypse'),
+(4, 'Julius Caesar'),
+(5, 'Zombeavers'),
+(6, 'Shoppen '),
+(7, 'Critters 3'),
+(8, 'Bungee Jumping of Their Own (Beonjijeompeureul hada)'),
+(9, 'Not Forgotten'),
+(10, 'Hidden Agenda'),
+(11, 'About a Boy'),
+(12, 'Breaking In'),
+(13, 'Snow Dogs'),
+(14, 'Strait-Jacket'),
+(15, 'Tokyo Joe'),
+(16, 'Good Will Hunting'),
+(17, 'Surrender, Dorothy'),
+(18, 'Ghidorah, the Three-Headed Monster (San daikaijû: Chikyû saidai '),
+(19, 'Flodder in Amerika!'),
+(20, 'Don\'t Go Breaking My Heart (Daan gyun naam yu)'),
+(21, 'Smiling Lieutenant, The'),
+(22, 'Good bye, Lenin!'),
+(23, 'Child Is Waiting, A'),
+(24, 'Unholy Three, The'),
+(25, 'Wristcutters: A Love Story');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `jadwal`
+-- Table structure for table `tiket`
 --
 
-CREATE TABLE `jadwal` (
-  `id_jadwal` int(11) NOT NULL,
-  `id_film` int(11) NOT NULL,
-  `id_bioskop` int(11) NOT NULL,
+CREATE TABLE `tiket` (
+  `id_film` int(3) NOT NULL,
+  `id_bioskop` int(3) NOT NULL,
   `tanggal` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `transaksi`
+-- Dumping data for table `tiket`
 --
 
-CREATE TABLE `transaksi` (
-  `id_transaksi` int(11) NOT NULL,
-  `id_user` int(11) NOT NULL,
-  `id_bioskop` int(11) NOT NULL,
-  `id_film` int(11) NOT NULL,
-  `id_jadwal` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT INTO `tiket` (`id_film`, `id_bioskop`, `tanggal`) VALUES
+(3, 5, '2021-09-17'),
+(7, 10, '2021-09-09'),
+(4, 7, '2021-09-27'),
+(8, 10, '2021-09-28'),
+(9, 4, '2021-09-11'),
+(1, 7, '2021-09-09'),
+(8, 5, '2021-09-04'),
+(5, 2, '2021-09-24'),
+(8, 5, '2021-09-13'),
+(2, 7, '2021-09-24'),
+(5, 6, '2021-09-29'),
+(7, 7, '2021-09-24'),
+(2, 2, '2021-09-10'),
+(5, 4, '2021-09-02'),
+(2, 7, '2021-09-03');
 
 -- --------------------------------------------------------
 
@@ -85,6 +152,16 @@ CREATE TABLE `user` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`telepon`, `nama`, `dana_status`) VALUES
+('08123456789', 'dummy', 1),
+('123', 'Dava', 1),
+('321', 'Dida tixID', 1),
+('1234', 'Dava Aditya Jauhar', 0);
+
+--
 -- Indexes for dumped tables
 --
 
@@ -94,115 +171,11 @@ CREATE TABLE `user` (
 ALTER TABLE `bioskop`
   ADD PRIMARY KEY (`id_bioskop`);
 
-<<<<<<< HEAD
-INSERT INTO `user` (`telepon`, `nama`, `dana_status`) VALUES
-('08123456789', 'dummy', 1);
-
-create table tiket (
-	nama_bioskop VARCHAR(50),
-	harga INT
-);
-
-insert into bioskop (nama_bioskop, harga) values
- ('San Jacinto', 28000),
- ('Szombathely', 50500),
- ('Jaguimitan', 30000),
- ('Sinanju', 47500),
- ('Båstad', 27500),
- ('Chengjiao Chengguanzhen', 57000),
- ('Göteborg', 47000),
- ('Shengli', 31000),
- ('Delong', 26500),
- ('Soito', 48500),
- ('Volodars’k-Volyns’kyy', 53000),
- ('Sergiyev Posad', 55000),
- ('Rechka', 59500),
- ('Cabricán', 35500),
- ('Dagsar', 45000),
- ('Annecy', 53500),
- ('Gwio Kura', 37500),
- ('Morrelgonj', 33500),
- ('Stony Hill', 50500),
- ('Chenxiang', 48000),
- ('Volgorechensk', 34000),
- ('Portëz', 44000),
- ('Wuyang', 40000),
- ('Gotemba', 26000),
- ('Oum Hadjer', 25000);
-
-
-create table tiket (
-	judul VARCHAR(50)
-);
-
-insert into film (judul) values
- ('Last Time I Saw Paris, The'),
- ('Storm Warning'),
- ('Superman/Batman: Apocalypse'),
- ('Julius Caesar'),
- ('Zombeavers'),
- ('Shoppen '),
- ('Critters 3'),
- ('Bungee Jumping of Their Own (Beonjijeompeureul hada)'),
- ('Not Forgotten'),
- ('Hidden Agenda'),
- ('About a Boy'),
- ('Breaking In'),
- ('Snow Dogs'),
- ('Strait-Jacket'),
- ('Tokyo Joe'),
- ('Good Will Hunting'),
- ('Surrender, Dorothy'),
- ('Ghidorah, the Three-Headed Monster (San daikaijû: Chikyû saidai no kessen)'),
- ('Flodder in Amerika!'),
- ('Don''t Go Breaking My Heart (Daan gyun naam yu)'),
- ('Smiling Lieutenant, The'),
- ('Good bye, Lenin!'),
- ('Child Is Waiting, A'),
- ('Unholy Three, The'),
- ('Wristcutters: A Love Story');
-
-create table tiket (
-	id_film INT,
-	id_bioskop INT,
-	tanggal DATE
-);
-
-insert into tiket (id_film, id_bioskop, tanggal) values
- (3, 5, '2021-09-17'),
- (7, 10, '2021-09-09'),
- (4, 7, '2021-09-27'),
- (8, 10, '2021-09-28'),
- (9, 4, '2021-09-11'),
- (1, 7, '2021-09-09'),
- (8, 5, '2021-09-04'),
- (5, 2, '2021-09-24'),
- (8, 5, '2021-09-13'),
- (2, 7, '2021-09-24'),
- (5, 6, '2021-09-29'),
- (7, 7, '2021-09-24'),
- (2, 2, '2021-09-10'),
- (5, 4, '2021-09-02'),
- (2, 7, '2021-09-03');
-
-=======
 --
 -- Indexes for table `film`
 --
 ALTER TABLE `film`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `jadwal`
---
-ALTER TABLE `jadwal`
-  ADD PRIMARY KEY (`id_jadwal`);
-
---
--- Indexes for table `transaksi`
---
-ALTER TABLE `transaksi`
-  ADD PRIMARY KEY (`id_transaksi`);
+  ADD PRIMARY KEY (`id_film`);
 
 --
 -- Indexes for table `user`
@@ -218,26 +191,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `bioskop`
 --
 ALTER TABLE `bioskop`
-  MODIFY `id_bioskop` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_bioskop` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `film`
 --
 ALTER TABLE `film`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `jadwal`
---
-ALTER TABLE `jadwal`
-  MODIFY `id_jadwal` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `transaksi`
---
-ALTER TABLE `transaksi`
-  MODIFY `id_transaksi` int(11) NOT NULL AUTO_INCREMENT;
->>>>>>> e6f8f6ce8b61775c1a5f76082bc4425483603160
+  MODIFY `id_film` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
