@@ -4,9 +4,10 @@
 '''
 
 
-import socket
+# Library yang digunakan agar program python dapat menggunakan database mysql
 import mysql.connector
 
+# Melakukan koneksi ke database ais_dana
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
@@ -14,8 +15,22 @@ mydb = mysql.connector.connect(
   database="ais_dana"
 )
 
+# mysql cursor untuk melakukan eksekusi statement yang berkomunikasi dengan mysql database
 mycursor = mydb.cursor()
 
+# fungsi untuk mendaftarkan akun baru pada dana
+def new_dana_user(nohp, nama):
+    try:
+        sql = "INSERT INTO user (telepon, nama, saldo) VALUES (%s, %s, 0)"
+        val = (nohp, nama)
+        mycursor.execute(sql, val)
+
+        mydb.commit()
+        print("\n[PENDAFTARAN BERHASIL]\nBerhasil mendaftarkan user", nama)
+    except:
+        print("\nGagal mendaftarkan user baru\n")
+
+# fungsi untuk mengecek apakah user sudah terdaftar atau belum
 def check_user(nohp):
     try:
         sql = "SELECT * FROM user WHERE telepon = %s"
@@ -33,17 +48,7 @@ def check_user(nohp):
     except:
         print("Gagal mendapatkan informasi akun", nohp)
 
-def new_dana_user(nohp, nama):
-    try:
-        sql = "INSERT INTO user (telepon, nama, saldo) VALUES (%s, %s, 0)"
-        val = (nohp, nama)
-        mycursor.execute(sql, val)
-
-        mydb.commit()
-        print("\n[PENDAFTARAN BERHASIL]\nBerhasil mendaftarkan user", nama)
-    except:
-        print("\nGagal mendaftarkan user baru\n")
-
+# fungsi untuk menampilkan saldo dana
 def check_dana_balance(nohp):
     try:
         sql = "SELECT * FROM user WHERE telepon = %s"
@@ -51,13 +56,13 @@ def check_dana_balance(nohp):
         mycursor.execute(sql, val)
 
         result = mycursor.fetchone()
-        # print(f"RESUL T: {result}\n")
         print("\n[CEK SALDO]\nSaldo", result[1],"saat ini = Rp.", result[2])
 
         return(result[2])
     except:
         print("\nGagal mendapatkan informasi akun", nohp)
 
+# fungsi untuk menampilkan history penggunaan akun dana (pembayaran/topup) 
 def check_history(nohp, date):
     try:
         sql = "SELECT * FROM history WHERE telepon = %s AND tanggal_history <= %s"
@@ -70,6 +75,7 @@ def check_history(nohp, date):
     except:
         print("\nGagal mendapatkan history akun", nohp)
 
+# fungsi untuk melakukan topup saldo dana
 def increase_dana_balance(nohp, nominal):
     try:
         print("INCREASING BALANCE\n")
@@ -86,6 +92,7 @@ def increase_dana_balance(nohp, nominal):
     except:
         print("\nGagal menambah saldo pada user", nohp)
 
+# fungsi pembayaran dengan potong saldo dana
 def decrease_dana_balance(nohp, nominal):
     try:
         saldo = check_dana_balance(nohp)
@@ -110,15 +117,15 @@ def decrease_dana_balance(nohp, nominal):
     except:
         print("\nGagal melakukan pembayaran pada user", nohp)
 
+# fungsi main yang digunakan untuk menampilkan menu yang digunakan untuk mengeksekusi program dana
 if __name__ == '__main__':
     while True:
-        command = input("[PILIH MENU]\n1. Daftar akun dana\n2. Top Up Saldo\n3. Pembayaran\n4. Nyalakan Server untuk TixID\n5. Exit\n\nMenu -> ")
+        command = input("[PILIH MENU]\n1. Daftar akun dana\n2. Top Up Saldo\n3. Pembayaran\n4. Exit\n\nMenu -> ")
         if command == "1":
             try:
                 print("[DAFTAR USER BARU]\n")
                 new_name = input("Nama -> ")
                 new_nohp = input("No HP -> ")
-                # new_saldo = int(input("Saldo -> "))
 
                 new_dana_user(new_nohp, new_name)
             except:
@@ -142,8 +149,6 @@ if __name__ == '__main__':
             except:
                 print("Format Salah!\n")
         elif command == "4":
-            dana_program()
-        elif command == "5":
             break
         else:
             print("Opsi tidak tersedia\n")
